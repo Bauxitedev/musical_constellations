@@ -1,0 +1,173 @@
+name: CI
+
+# Protip: running this CI costs about $0.70
+
+on:
+  push:
+    tags: ['v[0-9]*'] # only run if we push a commit with a tag, OR...
+  workflow_dispatch: # ...we dispatch it manually on GitHub
+    # inputs:
+    #   with_debug_info: # TODO use this later - maybe include the Windows .pdb file in the artifacts if true
+    #     description: 'Include debug information'
+    #     required: true
+    #     default: 'false'
+
+env:
+  CARGO_TERM_COLOR: always
+  EXE_NAME: musical_constellations
+  ZIP_PREFIX: musical_constellations
+
+jobs:
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+        build-mode: [debug, release]
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tests (Debug)
+        if: matrix.build-mode == 'debug'
+        run: |
+          cd rust
+          cargo test
+
+      - name: Run tests (Release)
+        if: matrix.build-mode == 'release'
+        run: |
+          cd rust
+          cargo test --release
+
+  build-dll:
+    runs-on: windows-2022
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Build library file
+        run: cargo build --release --lib
+        working-directory: ./rust
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: library-dll
+          path: ./rust/target/release/*.dll
+          if-no-files-found: error
+          retention-days: 1
+
+  build-so:
+    runs-on: ubuntu-22.04 # older version to require a lower level of libc
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Build library file
+      run: cargo build --release --lib
+      working-directory: ./rust
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: library-so
+        path: ./rust/target/release/*.so
+        if-no-files-found: error
+        retention-days: 1
+
+  godot-export:
+    runs-on: ubuntu-22.04
+    needs: [build-dll, build-so]
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      # Download both libraries
+      - uses: actions/download-artifact@v4
+        with:
+          name: library-dll
+          path:  ./rust/target/release/
+      - uses: actions/download-artifact@v4
+        with:
+          name: library-so
+          path: ./rust/target/release/
+
+      - name: Download Godot and its export templates
+        run: |
+          wget --no-verbose https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip -O godot4.zip
+          wget --no-verbose https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz -O templates.tpz
+          unzip godot4.zip -d ~/godot4
+          mv ~/godot4/Godot_v4.4.1-stable_linux.x86_64 ~/godot4/godot
+
+          mkdir -p ~/.local/share/godot/export_templates/4.4.1.stable
+          unzip templates.tpz -d /tmp/godot_templates
+          mv /tmp/godot_templates/templates/* ~/.local/share/godot/export_templates/4.4.1.stable/
+
+          rm -rf /tmp/godot_templates && rm templates.tpz
+
+      - name: Export Godot Linux
+        run: |
+          mkdir -p ./godot/out/linux/$EXE_NAME
+          ~/godot4/godot --headless --verbose --path godot/ --export-release "Linux" out/linux/$EXE_NAME/$EXE_NAME.x86_64
+
+          # it seems the first time you call this, it takes ~5 minutes to import the HDRI file
+
+      - name: Export Godot Windows
+        run: |
+          mkdir -p ./godot/out/win/$EXE_NAME
+          ~/godot4/godot --headless --verbose --path godot/ --export-release "Windows Desktop" out/win/$EXE_NAME/$EXE_NAME.exe
+
+      - name: Zip them up
+        run: |
+          (cd godot/out/win/ && zip -r ../${ZIP_PREFIX}_win.zip $EXE_NAME/)
+          (cd godot/out/linux/ && zip -r ../${ZIP_PREFIX}_linux.zip $EXE_NAME/)
+
+      # see https://github.com/actions/upload-artifact?tab=readme-ov-file#environment-variables-and-tilde-expansion
+      - uses: actions/upload-artifact@v4
+        with:
+          name: final-build
+          path: ./godot/out/*.zip
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0 # no point compressing zip files twice
+
+
+  publish-release:  # having a separate "release" job is useful if you only want to release conditionally
+    runs-on: ubuntu-22.04
+    needs: [test, godot-export]
+
+    # list of permissions: https://github.blog/changelog/2021-04-20-github-actions-control-permissions-for-github_token/
+    permissions:
+      contents: write # needed to publish a release
+
+    steps:
+
+      # this is needed for `gh release create` otherwise it doesn't know the state of the git repo
+      # `sparse-checkout` will only checkout the root files (we only really need the .git folder and `RELEASE_INSTRUCTIONS.md`)
+      - uses: actions/checkout@v4
+        with:
+            sparse-checkout: .
+
+      # https://github.com/actions/download-artifact/issues/374
+      - name: Download artifacts (and forcibly extracts them, unfortunately)
+        uses: actions/download-artifact@v4
+        with:
+          name: final-build
+
+      - name: Publish release
+        run: gh release create "$GITHUB_REF_NAME" "${ZIP_PREFIX}_linux.zip#Musical Constellations (Linux x86_64)" "${ZIP_PREFIX}_win.zip#Musical Constellations (Windows x86_64)" --generate-notes --notes-file RELEASE_INSTRUCTIONS.md --verify-tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # this seems to be the correct way to pass a github token, see https://docs.github.com/en/actions/tutorials/use-github_token-in-workflows#example-1-passing-the-github_token-as-an-input
+          # note that GITHUB_TOKEN expires almost immediately after the CI job is done
+
+          # TODO: Create a release only if there are new commits available since the last release
+          # $ gh release create v1.2.3 --fail-on-no-commits
+
+

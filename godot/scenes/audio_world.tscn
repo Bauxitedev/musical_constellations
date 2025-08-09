@@ -1,0 +1,68 @@
+[gd_scene load_steps=11 format=3 uid="uid://cbsohkrerweyp"]
+
+[ext_resource type="PackedScene" uid="uid://cec6clahy6qv5" path="res://scenes/audio_graph.tscn" id="1_1wuup"]
+
+[sub_resource type="Gradient" id="Gradient_lquwl"]
+interpolation_mode = 2
+interpolation_color_space = 1
+offsets = PackedFloat32Array(0, 0.565957, 1)
+colors = PackedColorArray(0.173454, 0.4375, 0.16826, 1, 0.146516, 0.119875, 0.433594, 1, 0.273438, 0.0161863, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_7mycd"]
+gradient = SubResource("Gradient_lquwl")
+
+[sub_resource type="Gradient" id="Gradient_272bh"]
+offsets = PackedFloat32Array(0, 0.646809, 1)
+colors = PackedColorArray(0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_5vw27"]
+gradient = SubResource("Gradient_272bh")
+
+[sub_resource type="Curve" id="Curve_272bh"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.421456, 0.958199), 0.0, 0.0, 0, 0, Vector2(0.984674, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_5vw27"]
+curve = SubResource("Curve_272bh")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kek77"]
+emission_shape = 2
+emission_sphere_radius = 5.0
+angle_min = 1.07288e-05
+angle_max = 360.0
+spread = 180.0
+gravity = Vector3(0, 0, 0)
+linear_accel_min = -2.23517e-06
+linear_accel_max = 0.0199978
+scale_min = 0.0
+scale_max = 0.06
+scale_curve = SubResource("CurveTexture_5vw27")
+color_ramp = SubResource("GradientTexture1D_5vw27")
+color_initial_ramp = SubResource("GradientTexture1D_7mycd")
+turbulence_enabled = true
+turbulence_noise_scale = 4.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lquwl"]
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.410156, 0.410156, 0.410156, 1)
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_7mycd"]
+material = SubResource("StandardMaterial3D_lquwl")
+
+[node name="AudioWorld" type="Node"]
+
+[node name="AudioGraph" parent="." instance=ExtResource("1_1wuup")]
+num_points = 2000
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="."]
+amount = 1000
+lifetime = 4.0
+process_material = SubResource("ParticleProcessMaterial_kek77")
+draw_pass_1 = SubResource("QuadMesh_7mycd")

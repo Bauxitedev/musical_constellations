@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://s72ypfl0n6u"]
+
+[node name="AudioUI" type="AudioUI"]

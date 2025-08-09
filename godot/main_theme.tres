@@ -1,0 +1,55 @@
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://ds7n24qgtmnfj"]
+
+[ext_resource type="FontFile" uid="uid://b44dbw3f8agxb" path="res://fonts/Inconsolata-Medium.ttf" id="1_470mv"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_470mv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_470mv"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.611765)
+skew = Vector2(0.5, 0)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_58jnp"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_466ly"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.301961)
+skew = Vector2(0.5, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_52mx2"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0.301961)
+skew = Vector2(0.5, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_py0i1"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.301961)
+skew = Vector2(0.5, 0)
+
+[resource]
+default_font = ExtResource("1_470mv")
+HBoxContainer/constants/separation = 8
+MarginContainer/constants/margin_bottom = 16
+MarginContainer/constants/margin_left = 16
+MarginContainer/constants/margin_right = 16
+MarginContainer/constants/margin_top = 16
+TabContainer/constants/side_margin = 0
+TabContainer/styles/panel = SubResource("StyleBoxEmpty_470mv")
+TabContainer/styles/tab_disabled = SubResource("StyleBoxFlat_470mv")
+TabContainer/styles/tab_focus = SubResource("StyleBoxEmpty_58jnp")
+TabContainer/styles/tab_hovered = SubResource("StyleBoxFlat_466ly")
+TabContainer/styles/tab_selected = SubResource("StyleBoxFlat_52mx2")
+TabContainer/styles/tab_unselected = SubResource("StyleBoxFlat_py0i1")
+VBoxContainer/constants/separation = 8

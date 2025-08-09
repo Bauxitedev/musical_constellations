@@ -1,0 +1,6 @@
+# Basic import sorting
+group_imports = "StdExternalCrate"
+reorder_imports = true
+
+# Merge imports from the same crate
+merge_imports = true

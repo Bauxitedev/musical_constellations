@@ -1,0 +1,86 @@
+[gd_scene load_steps=12 format=3 uid="uid://s2htcb0obosq"]
+
+[ext_resource type="Texture2D" uid="uid://bwvl0tghhbnga" path="res://textures/particle/ball.png" id="1_ldodm"]
+[ext_resource type="Shader" uid="uid://cdoho3vtwwq6y" path="res://shaders/spinning_billboard.gdshader" id="2_d7c1c"]
+[ext_resource type="Texture2D" uid="uid://c25qyao1mqs1j" path="res://textures/crosshair/crosshair116.png" id="2_ktqob"]
+[ext_resource type="Texture2D" uid="uid://congvxmeq8bnl" path="res://textures/crosshair/cross_small.png" id="4_ldodm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2rqaq"]
+resource_local_to_scene = true
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_texture = ExtResource("1_ldodm")
+texture_repeat = false
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="QuadMesh_7t2w4"]
+size = Vector2(0.75, 0.75)
+
+[sub_resource type="QuadMesh" id="QuadMesh_d7c1c"]
+size = Vector2(0.2, 0.2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ktqob"]
+render_priority = 0
+shader = ExtResource("2_d7c1c")
+shader_parameter/albedo = Color(0.507813, 0.507813, 0.507813, 1)
+shader_parameter/texture_albedo = ExtResource("2_ktqob")
+shader_parameter/albedo_texture_size = Vector2i(128, 128)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/particles_anim_h_frames = 1
+shader_parameter/particles_anim_v_frames = 1
+shader_parameter/particles_anim_loop = false
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="QuadMesh" id="QuadMesh_plnmt"]
+size = Vector2(0.3, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_twq36"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(1, 0.113772, 0.248629, 1)
+albedo_texture = ExtResource("4_ldodm")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_2rqaq"]
+radius = 0.125
+
+[node name="AudioNode" type="AudioNode"]
+
+[node name="Vis" type="Node3D" parent="."]
+
+[node name="Sphere" type="MeshInstance3D" parent="Vis"]
+material_override = SubResource("StandardMaterial3D_2rqaq")
+mesh = SubResource("QuadMesh_7t2w4")
+skeleton = NodePath("../../..")
+
+[node name="IndicatorPending" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_d7c1c")
+skeleton = NodePath("../Vis/Sphere")
+surface_material_override/0 = SubResource("ShaderMaterial_ktqob")
+
+[node name="IndicatorCancelling" type="MeshInstance3D" parent="."]
+mesh = SubResource("QuadMesh_plnmt")
+surface_material_override/0 = SubResource("StandardMaterial3D_twq36")
+
+[node name="StreamPlayer" type="AudioStreamPlayer3D" parent="."]
+attenuation_filter_cutoff_hz = 1000.0
+doppler_tracking = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_2rqaq")

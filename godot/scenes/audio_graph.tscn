@@ -1,0 +1,80 @@
+[gd_scene load_steps=12 format=3 uid="uid://cec6clahy6qv5"]
+
+[ext_resource type="AudioStream" uid="uid://diowv2mfbprb5" path="res://sounds/metronome.wav" id="1_fx8kd"]
+[ext_resource type="Shader" uid="uid://blngc7nwcts1j" path="res://shaders/sweeping_cylinder.gdshader" id="1_pe6pi"]
+[ext_resource type="Shader" uid="uid://dv57xlrx1dj" path="res://shaders/spinning_billboard_xray.gdshader" id="3_pe6pi"]
+[ext_resource type="Texture2D" uid="uid://c25qyao1mqs1j" path="res://textures/crosshair/crosshair116.png" id="4_vra1h"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vra1h"]
+render_priority = 0
+shader = ExtResource("1_pe6pi")
+shader_parameter/albedo = Color(0.38, 0.38, 0.38, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_8yeqm"]
+material = SubResource("ShaderMaterial_vra1h")
+top_radius = 0.003
+bottom_radius = 0.003
+height = 1.0
+radial_segments = 6
+rings = 1
+
+[sub_resource type="MultiMesh" id="MultiMesh_pe6pi"]
+transform_format = 1
+use_colors = true
+use_custom_data = true
+mesh = SubResource("CylinderMesh_8yeqm")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nrfg8"]
+render_priority = 0
+shader = ExtResource("3_pe6pi")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/texture_albedo = ExtResource("4_vra1h")
+shader_parameter/albedo_texture_size = Vector2i(128, 128)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/particles_anim_h_frames = 1
+shader_parameter/particles_anim_v_frames = 1
+shader_parameter/particles_anim_loop = false
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+
+[sub_resource type="QuadMesh" id="QuadMesh_vra1h"]
+material = SubResource("ShaderMaterial_nrfg8")
+size = Vector2(0.16, 0.16)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pe6pi"]
+render_priority = -10
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 0.827451)
+distance_fade_mode = 1
+distance_fade_max_distance = 4.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_vra1h"]
+material = SubResource("StandardMaterial3D_pe6pi")
+radius = 5.0
+height = 10.0
+radial_segments = 128
+rings = 64
+
+[node name="AudioGraph" type="AudioGraph"]
+
+[node name="EdgesMultiMesh" type="MultiMeshInstance3D" parent="."]
+multimesh = SubResource("MultiMesh_pe6pi")
+
+[node name="Metronome" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("1_fx8kd")
+pitch_scale = 7.0
+
+[node name="IndicatorLoading" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("QuadMesh_vra1h")
+
+[node name="Planet" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.999, 0, 0, 0, 0.999, 0, 0, 0, 0.999, 0, 0, 0)
+mesh = SubResource("SphereMesh_vra1h")

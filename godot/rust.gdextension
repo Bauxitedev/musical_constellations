@@ -1,0 +1,11 @@
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = 4.4
+reloadable = true
+
+[libraries]
+windows.debug.x86_64 =   "res://../rust/target/release/musical_constellations_rust.dll"
+windows.release.x86_64 = "res://../rust/target/release/musical_constellations_rust.dll"
+
+linux.debug.x86_64 = "res://../rust/target/release/libmusical_constellations_rust.so"
+linux.release.x86_64 = "res://../rust/target/release/libmusical_constellations_rust.so"

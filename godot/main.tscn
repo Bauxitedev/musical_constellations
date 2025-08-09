@@ -1,0 +1,185 @@
+[gd_scene load_steps=9 format=3 uid="uid://c33icnk8qewbx"]
+
+[ext_resource type="Script" uid="uid://dm22arba1v3kk" path="res://main.gd" id="1_ig7tw"]
+[ext_resource type="Environment" uid="uid://dr784kktkjlvh" path="res://main_env.tres" id="1_lquwl"]
+[ext_resource type="Script" uid="uid://du1nsfactskai" path="res://cam.gd" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://s72ypfl0n6u" path="res://scenes/audio_ui.tscn" id="3_1bvp3"]
+[ext_resource type="Theme" uid="uid://ds7n24qgtmnfj" path="res://main_theme.tres" id="5_lquwl"]
+[ext_resource type="FontFile" uid="uid://c2nn4k4kpm0ts" path="res://fonts/Inter_28pt-Thin.ttf" id="6_7mycd"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_7mycd"]
+line_spacing = -20.0
+font = ExtResource("6_7mycd")
+font_size = 80
+outline_color = Color(0, 0, 0, 0.243137)
+shadow_size = 5
+shadow_color = Color(0, 0, 0, 1)
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="LabelSettings" id="LabelSettings_lquwl"]
+font_size = 12
+
+[node name="Main" type="WorldEnvironment"]
+environment = ExtResource("1_lquwl")
+script = ExtResource("1_ig7tw")
+
+[node name="AudioWorldHolder" type="Node" parent="."]
+
+[node name="Camroot" type="Node3D" parent="."]
+script = ExtResource("2_0xm2m")
+
+[node name="Camera3D" type="Camera3D" parent="Camroot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+
+[node name="UI" type="Node2D" parent="."]
+
+[node name="AudioUI" parent="UI" instance=ExtResource("3_1bvp3")]
+
+[node name="UIControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme = ExtResource("5_lquwl")
+
+[node name="IntroText" type="Label" parent="UIControl"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "♫ Musical Constellations"
+label_settings = SubResource("LabelSettings_7mycd")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="UIControl"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PerfLabel" type="Label" parent="UIControl/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+text = "Perf"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIControl/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="HSeparator" type="HSeparator" parent="UIControl/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UIControl/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BPMLabel" type="Label" parent="UIControl/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "___ BPM"
+
+[node name="BPMHSlider" type="HSlider" parent="UIControl/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 30.0
+max_value = 300.0
+value = 250.0
+exp_edit = true
+rounded = true
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UIControl/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UIControl/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Seed:"
+
+[node name="SeedEdit" type="LineEdit" parent="UIControl/MarginContainer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_length = 16
+caret_blink = true
+
+[node name="RandomizeButton" type="Button" parent="UIControl/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Randomize"
+
+[node name="HSeparator2" type="HSeparator" parent="UIControl/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TabContainer" type="TabContainer" parent="UIControl/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+current_tab = 0
+clip_tabs = false
+
+[node name="Controls" type="MarginContainer" parent="UIControl/MarginContainer/VBoxContainer/TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIControl/MarginContainer/VBoxContainer/TabContainer/Controls"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+alignment = 1
+
+[node name="Label" type="Label" parent="UIControl/MarginContainer/VBoxContainer/TabContainer/Controls/VBoxContainer"]
+layout_mode = 2
+text = "Controls
+--------------------------
+[LMB] Play constellations
+[RMB] Stop playing
+[WASD] Rotate camera
+[Z] Zoom camera
+[Q] Restart same seed
+
+[Esc] Toggle fullscreen
+[E] Toggle metronome
+[F1] Toggle UI
+
+[R] BPM tap
+[V] Stress test (⚠ loud!)
+[B] Panic!
+--------------------------"
+
+[node name="Statistics" type="MarginContainer" parent="UIControl/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="DebugLabel" type="RichTextLabel" parent="UIControl/MarginContainer/VBoxContainer/TabContainer/Statistics"]
+custom_minimum_size = Vector2(220, 400)
+layout_mode = 2
+focus_mode = 2
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
+text = "Debug text here"
+autowrap_mode = 0
+selection_enabled = true
+
+[node name="About" type="MarginContainer" parent="UIControl/MarginContainer/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="VersionLabel" type="Label" parent="UIControl/MarginContainer/VBoxContainer/TabContainer/About"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "Version"
+label_settings = SubResource("LabelSettings_lquwl")
+
+[connection signal="value_changed" from="UIControl/MarginContainer/VBoxContainer/HBoxContainer/BPMHSlider" to="." method="_on_bpm_hslider_value_changed"]
+[connection signal="text_submitted" from="UIControl/MarginContainer/VBoxContainer/HBoxContainer2/SeedEdit" to="." method="_on_seed_edit_text_submitted"]
+[connection signal="pressed" from="UIControl/MarginContainer/VBoxContainer/RandomizeButton" to="." method="_on_randomize_button_pressed"]
