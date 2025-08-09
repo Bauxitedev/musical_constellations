@@ -14,7 +14,7 @@ The program generates constellations based on a randomly generated seed. It appe
 
 ## Download
 
-To try it out, grab the executables at [TODO TODO TODO]. Windows and Linux (x86_64) only for now!
+To try it out, [grab the executables here](https://github.com/Bauxitedev/musical_constellations/releases). Windows and Linux (x86_64) only for now!
 
 Running at at least 1080p resolution is recommended to get the smoothest lines!
 
