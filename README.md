@@ -6,9 +6,9 @@ This is a little experiment that answers the question: what happens if you turn 
 
 ![Application Demo](promo/demo.gif)
 
-(if gifs had music, that would sound very nice right now)
-
 You can click on the constellations to make them play little melodies. You can right click to make them stop.
+
+[I made an in-depth video about all the mathematical details behind all this, including a demo at the end!](https://www.youtube.com/watch?v=hbHPq21pvbQ)
 
 The program generates constellations based on a randomly generated seed. It appears in a textbox on the top-left of the screen. If you found a seed that sounds nice, be sure to share it with the rest of the world!
 
