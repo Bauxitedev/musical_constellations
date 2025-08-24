@@ -98,10 +98,13 @@ jobs:
         cd emsdk
         ./emsdk install 3.1.74
         ./emsdk activate 3.1.74
-        source ./emsdk_env.sh
+
 
     - name: Emscripten sanity check (Emscripten must be in PATH for the build to succeed)
-      run: emcc --version
+      run: |
+        source ./emsdk_env.sh
+        emcc --version
+      working-directory: ./emsdk
 
     - name: Download Rust nightly wasm32 toolchain
       run: |
@@ -109,8 +112,10 @@ jobs:
         rustup component add rust-src --toolchain nightly
         rustup target add wasm32-unknown-emscripten --toolchain nightly
 
-    - name: Build wasm file
-      run: cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten --lib --release
+    - name: Build wasm file (with Emscripten in PATH)
+      run: |
+        source ../emsdk/emsdk_env.sh
+        cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten --lib --release
       working-directory: ./rust
 
     - uses: actions/upload-artifact@v4
