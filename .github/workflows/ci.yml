@@ -80,15 +80,41 @@ jobs:
         if-no-files-found: error
         retention-days: 1
 
+  build-wasm:
+    runs-on: ubuntu-22.04
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Setup upterm session ALWAYS
+      if: ${{ always() }}
+      uses: lhotari/action-upterm@v1
+      with:
+        limit-access-to-actor: true # limits ssh access and adds the ssh public key for the user which triggered the workflow
+        wait-timeout-minutes: 3 # if no one connects after 5 minutes, shut down server
+   #   env:
+   #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # enables using `gh` to perform releases
+
+    - name: Build wasm file
+      run: cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten --lib --release
+      working-directory: ./rust
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: library-wasm
+        path: ./rust/target/release/*.wasm
+        if-no-files-found: error
+        retention-days: 1
+
   godot-export:
     runs-on: ubuntu-22.04
-    needs: [build-dll, build-so]
+    needs: [build-dll, build-so, build-wasm]
 
     steps:
 
       - uses: actions/checkout@v4
 
-      # Download both libraries
+      # Download all libraries
       - uses: actions/download-artifact@v4
         with:
           name: library-dll
@@ -96,6 +122,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: library-so
+          path: ./rust/target/release/
+      - uses: actions/download-artifact@v4
+        with:
+          name: library-wasm
           path: ./rust/target/release/
 
       - name: Download Godot and its export templates
