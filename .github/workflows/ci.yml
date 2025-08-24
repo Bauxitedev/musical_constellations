@@ -88,11 +88,11 @@ jobs:
 
     # This is largely based on https://godot-rust.github.io/book/toolchain/export-web.html
 
-    - name: Install dependencies
+    - name: Install dependencies (it seems these are already installed)
       run: |
         sudo apt update && sudo apt install -y git curl python3 xz-utils build-essential
 
-    - name: Install Emscripten 3.1.74 (not sure if we need the `source` at the end, if not, add it to the cargo build step + sanity check)
+    - name: Install Emscripten 3.1.74
       run: |
         git clone https://github.com/emscripten-core/emsdk.git
         cd emsdk
@@ -121,7 +121,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: library-wasm
-        path: ./rust/target/release/*.wasm
+        path: ./rust/target/wasm32-unknown-emscripten/release/*.wasm
         if-no-files-found: error
         retention-days: 1
 
