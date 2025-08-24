@@ -90,7 +90,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        apt update && apt install -y git curl python3 xz-utils build-essential
+        sudo apt update && sudo apt install -y git curl python3 xz-utils build-essential
 
     - name: Install Emscripten 3.1.74 (not sure if we need the `source` at the end, if not, add it to the cargo build step + sanity check)
       run: |
