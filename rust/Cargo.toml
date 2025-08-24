@@ -19,7 +19,7 @@ color-eyre = "0.6.5"
 colorgrad = "0.7.2" 
 flume = "0.11.1" 
 futures = "0.3.31" 
-godot = {version = "0.3.1", features = ["experimental-threads", "serde"]}# `experimental-threads` needed for the audio callback, `serde` needed so we can serialize Vector3 in GraphConstellation 
+godot = {version = "0.3.1", features = ["experimental-threads", "experimental-wasm", "serde"]}# `experimental-threads` needed for the audio callback, `serde` needed so we can serialize Vector3 in GraphConstellation, `lazy-function-tables` may be useful to reduce wasm compilation time/size but according to docs it's not compatible with `experimental-threads` 
 itertools = "0.14.0" 
 kiddo = "5.1.0" 
 nalgebra = "0.33.2" 
@@ -37,7 +37,7 @@ similar-asserts = "1.7.0"
 spin_sleep = "1.3.2" 
 strum = {version = "0.27.1", features = ["derive"]} 
 time = {version = "0.3.41", features = ["macros"]} 
-tokio = {version = "1.45.1", features = ["sync", "time", "macros", "rt-multi-thread"]} 
+tokio = {version = "1.45.1", features = ["sync", "time", "macros"]}#  "rt-multi-thread" temporarily disabled due to wasm, shouldn't have a big impact. Since we use the tokio compat bridge, and never manually create a multi-threaded runtime, the tokio compat bridge will default to single threaded (you can check the source code to confirm this) 
 tokio-util = "0.7.15" 
 tracing = "0.1.41" 
 tracing-error = "0.2.1" 

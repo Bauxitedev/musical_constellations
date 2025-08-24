@@ -9,3 +9,6 @@ windows.release.x86_64 = "res://../rust/target/release/musical_constellations_ru
 
 linux.debug.x86_64 = "res://../rust/target/release/libmusical_constellations_rust.so"
 linux.release.x86_64 = "res://../rust/target/release/libmusical_constellations_rust.so"
+
+web.debug.wasm32 = "res://../rust/target/wasm32-unknown-emscripten/release/musical_constellations_rust.wasm"
+web.release.wasm32 = "res://../rust/target/wasm32-unknown-emscripten/release/musical_constellations_rust.wasm"

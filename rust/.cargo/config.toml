@@ -1,0 +1,13 @@
+
+# This is needed to get wasm working, see https://godot-rust.github.io/book/toolchain/export-web.html#project-configuration
+[target.wasm32-unknown-emscripten]
+rustflags = [
+  "-C",
+  "link-args=-pthread", # /!\ Read 'Thread support' below regarding this flag
+  "-C",
+  "target-feature=+atomics", # /!\ Read 'Thread support' below regarding this flag
+  "-C",
+  "link-args=-sSIDE_MODULE=2",
+  "-Zlink-native-libraries=no",
+  "-Cllvm-args=-enable-emscripten-cxx-exceptions=0",
+]
