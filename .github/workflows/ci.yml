@@ -86,14 +86,28 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    # - name: Setup upterm session ALWAYS
-    #   if: ${{ always() }}
-    #   uses: lhotari/action-upterm@v1
-    #   with:
-    #     limit-access-to-actor: true # limits ssh access and adds the ssh public key for the user which triggered the workflow
-    #     wait-timeout-minutes: 3 # if no one connects after 5 minutes, shut down server
-    #   env:
-    #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # enables using `gh` to perform releases
+    # This is largely based on https://godot-rust.github.io/book/toolchain/export-web.html
+
+    - name: Install dependencies
+      run: |
+        apt update && apt install -y git curl python3 xz-utils build-essential
+
+    - name: Install Emscripten 3.1.74 (not sure if we need the `source` at the end, if not, add it to the cargo build step + sanity check)
+      run: |
+        git clone https://github.com/emscripten-core/emsdk.git
+        cd emsdk
+        ./emsdk install 3.1.74
+        ./emsdk activate 3.1.74
+        source ./emsdk_env.sh
+
+    - name: Emscripten sanity check (Emscripten must be in PATH for the build to succeed)
+      run: emcc --version
+
+    - name: Download Rust nightly wasm32 toolchain
+      run: |
+        rustup toolchain install nightly
+        rustup component add rust-src --toolchain nightly
+        rustup target add wasm32-unknown-emscripten --toolchain nightly
 
     - name: Build wasm file
       run: cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten --lib --release
@@ -153,10 +167,16 @@ jobs:
           mkdir -p ./godot/out/win/$EXE_NAME
           ~/godot4/godot --headless --verbose --path godot/ --export-release "Windows Desktop" out/win/$EXE_NAME/$EXE_NAME.exe
 
+      - name: Export Godot web (note - this requires the .so file to be present as well, which is kinda counter-intuitive)
+        run: |
+          mkdir -p ./godot/out/web/$EXE_NAME
+          ~/godot4/godot --headless --verbose --path godot/ --export-release "Web" out/web/$EXE_NAME/index.html
+
       - name: Zip them up
         run: |
           (cd godot/out/win/ && zip -r ../${ZIP_PREFIX}_win.zip $EXE_NAME/)
           (cd godot/out/linux/ && zip -r ../${ZIP_PREFIX}_linux.zip $EXE_NAME/)
+          (cd godot/out/web/ && zip -r ../${ZIP_PREFIX}_web.zip $EXE_NAME/)
 
       # see https://github.com/actions/upload-artifact?tab=readme-ov-file#environment-variables-and-tilde-expansion
       - uses: actions/upload-artifact@v4
@@ -199,5 +219,7 @@ jobs:
 
           # TODO: Create a release only if there are new commits available since the last release
           # $ gh release create v1.2.3 --fail-on-no-commits
+
+          # TODO add web here
 
 
