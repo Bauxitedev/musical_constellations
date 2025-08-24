@@ -86,14 +86,14 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    - name: Setup upterm session ALWAYS
-      if: ${{ always() }}
-      uses: lhotari/action-upterm@v1
-      with:
-        limit-access-to-actor: true # limits ssh access and adds the ssh public key for the user which triggered the workflow
-        wait-timeout-minutes: 3 # if no one connects after 5 minutes, shut down server
-   #   env:
-   #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # enables using `gh` to perform releases
+    # - name: Setup upterm session ALWAYS
+    #   if: ${{ always() }}
+    #   uses: lhotari/action-upterm@v1
+    #   with:
+    #     limit-access-to-actor: true # limits ssh access and adds the ssh public key for the user which triggered the workflow
+    #     wait-timeout-minutes: 3 # if no one connects after 5 minutes, shut down server
+    #   env:
+    #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # enables using `gh` to perform releases
 
     - name: Build wasm file
       run: cargo +nightly build -Zbuild-std --target wasm32-unknown-emscripten --lib --release
