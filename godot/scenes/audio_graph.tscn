@@ -70,6 +70,7 @@ multimesh = SubResource("MultiMesh_pe6pi")
 [node name="Metronome" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("1_fx8kd")
 pitch_scale = 7.0
+playback_type = 1
 
 [node name="IndicatorLoading" type="MeshInstance3D" parent="."]
 visible = false
